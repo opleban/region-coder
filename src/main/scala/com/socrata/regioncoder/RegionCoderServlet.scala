@@ -48,6 +48,21 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     }
   }
 
+  // Request body is a JSON array of points. Each point is an array of length 2.
+  // Example: [[-87.6847,41.8369],[-122.3331,47.6097],...]
+  post("/v2/regions/:resourceName/transformcode") {
+    val points = parsedBody.extract[Seq[Seq[Double]]]
+    if (points.isEmpty) {
+      halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
+    }
+    val labelToReturn = params.getOrElse("labelToReturn", halt(BadRequest("Missing param 'columnToReturn'")))
+    val idColumnToReturn = params.getOrElse("idColumnToReturn", halt(BadRequest("Missing param 'idColumnToReturn'")))
+    new AsyncResult {
+      override val timeout = rcConfig.shapePayloadTimeout
+      val is = pointcodeTimer { regionCodeByTransform(params("resourceName"), labelToReturn, idColumnToReturn, points) }
+    }
+  }
+
   post("/v2/regions/:resourceName/stringcode") {
     val strings = parsedBody.extract[Seq[String]]
     if (strings.isEmpty) halt(HttpStatus.SC_BAD_REQUEST,

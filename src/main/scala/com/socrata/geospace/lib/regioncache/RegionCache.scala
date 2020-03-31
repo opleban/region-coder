@@ -12,6 +12,8 @@ import org.geoscript.feature._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import spray.caching.LruCache
+import com.rojoma.json.v3.matcher._
+import com.rojoma.json.v3.ast.{JValue, JString, JArray, JObject}
 
 /**
   * Represents the key for a region cache (dataset resource name + column name)

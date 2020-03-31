@@ -25,6 +25,7 @@ class SpatialRegionCache(config: Config) extends MemoryManagingRegionCache[Spati
   val jPolygon = JString(polygon)
   val multiPolygon = "multipolygon"
   val jMultiPolygon = JString(multiPolygon)
+  var idToTextMap = Map.empty[Int, String]
 
   // Cache the geometry column name for each region dataset
   val geomColumnCache = LruCache[String](config.getInt("max-entries"))
